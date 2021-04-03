@@ -26,4 +26,21 @@ const addCollectionsAndDocuments = async (collectionKey, objectsToAdd) => {
   return await batch.commit();
 };
 
-export { db, addCollectionsAndDocuments };
+const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map((doc) => {
+    const { title, problems } = doc.data();
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      problems,
+    };
+  });
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
+};
+
+export { db, addCollectionsAndDocuments, convertCollectionsSnapshotToMap };
